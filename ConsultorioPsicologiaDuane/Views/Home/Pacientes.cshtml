@@ -1,0 +1,133 @@
+﻿
+@model List<ConsultorioPsicologiaDuane.Models.Paciente>
+@{
+    ViewBag.Title = "Pacientes";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="~/Content/Paciente.css" />
+    <title>Pacientes</title>
+</head>
+
+<body>
+    <header>
+        <h1 class="header-title">Cadastro de Pacientes</h1>
+    </header>
+
+    <main>
+        <div style="width:100%;">
+            <button type="button" class="button blue" onclick="openModal()">Cadastrar Paciente</button>
+            <table class="records">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Cpf</th>
+                        <th>Email</th>
+                        <th>Genero</th>
+                        <th>Estado Civil</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count > 0)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Nome</td>
+                                <td>@item.CPF</td>
+                                <td>@item.Email</td>
+                                <td>@item.Genero</td>
+                                <td>@item.EstadoCivil</td>
+                                <td><button id="btnEditar-@item.IdPaciente" type="button" class="button green">Editar</button> <button id="btnExcluir-@item.IdPaciente" type="button" class="button red" >Excluir</button></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            @*else
+                {
+                    <form method="post" action="@Url.Action("ConsultarDados")">
+                        <button type="submit">Consultar</button>
+                    </form>
+                }*@
+
+            <div id="modalNovoPaciente" class="modal">
+                <div class="modal-content">
+                    <header>
+                        <h2>Novo Paciente</h2>
+                        <span class="modalClose" onclick="closeModal()">&#10006;</span>
+                    </header>
+                    <form action="CadastrarPaciente" method="post">
+                        <input name="Nome" type="text" placeholder="Nome Paciente" />
+                        <input name="DataNascimento" type="date" id="dataHora" name="dataHora">
+                        <input name="CPF" type="text" placeholder="CPF" />
+                        <input name="Email" type="text" placeholder="E-mail" />
+                        <select name="Genero" id="cbbGenero" name="Genero">
+                            <option value="M">Masculino</option>
+                            <option value="F">Feminino</option>
+                        </select>
+                        <input name="EstadoCivil" type="text" placeholder="Estado Civil" />
+                        <footer>
+                            <button type="submit" class="button green">Cadastrar</button>
+                        </footer>
+                    </form>
+                    
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer></footer>
+</body>
+
+<script>
+// Função para abrir o modal
+function openModal() {
+    document.getElementById("modalNovoPaciente").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("modalNovoPaciente").style.display = "none";
+    }
+    
+
+    //document.getElementById('btnExcluir').addEventListener('click', function () {
+    //    var id = this.getAttribute('data-id');
+    //    excluirRegistro(id);
+    //});
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var buttons = document.querySelectorAll('[id^="btnExcluir-"]');
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var id = this.id.split('-')[1]; // Extrair o ID do botão
+                excluirRegistro(id);
+            });
+        });
+    });
+
+    function excluirRegistro(id) {
+        if (confirm('Tem certeza que deseja excluir este registro?')) {
+            fetch('@Url.Action("ExcluirRegistro", "Home")?id=' + id, {
+    method: 'POST'
+})
+                .then(response => {
+                    if (response.ok) {
+                        // Atualizar a página ou fazer qualquer outra ação necessária
+                        window.location.reload();
+                    } else {
+                        console.error('Erro ao excluir registro');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao excluir registro:', error);
+                });
+        }
+    }
+
+</script>
